@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz: Invoer/uitvoer, variabelen &amp; datatypes</title>
+  <style>
+    :root{
+      --ink:#000a1e;
+      --muted:#666666;
+      --paper:#ffffff;
+      --deep:#f5f5f5;
+      --line:#dee1e4;
+      --mint:#fa6432;
+      --sun:#00283c;
+      --code-bg:#f2f5f8;
+      --code-line:#e8ebee;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      width:100%;
+      font-family:"DM Sans", Arial, sans-serif;
+      color:var(--ink);
+      background:var(--deep);
+      font-size:16px;
+      line-height:1.6;
+    }
+
+    .app-shell{
+      width:100%;
+      min-height:calc(100vh);
+      background:
+        radial-gradient(circle at 7% 8%,rgba(250,100,50,.06),transparent 25rem),
+        radial-gradient(circle at 94% 2%,rgba(0,40,60,.04),transparent 21rem),
+        var(--deep);
+    }
+
+    header{
+      width:100%;
+      padding:2rem 1rem 1.25rem;
+    }
+
+    header .container{
+      max-width:56rem;
+      margin:0 auto;
+    }
+
+    .header-badge{
+      margin-bottom:1.25rem;
+      display:flex;
+      align-items:center;
+      gap:0.75rem;
+      font-size:0.875rem;
+      font-weight:600;
+      letter-spacing:0.18em;
+      color:#fa6432;
+    }
+
+    .badge-icon{
+      display:flex;
+      height:2.25rem;
+      width:2.25rem;
+      align-items:center;
+      justify-content:center;
+      border-radius:9999px;
+      border:1px solid rgba(250,100,50,0.4);
+      background:#fff5f0;
+    }
+
+    h1{
+      max-width:48rem;
+      font-size:2rem;
+      font-weight:700;
+      line-height:1.2;
+      margin:0;
+    }
+
+    .header-desc{
+      margin-top:1rem;
+      max-width:42rem;
+      line-height:1.75;
+      color:#666666;
+    }
+
+    main{
+      width:100%;
+      padding:0 1rem 3rem;
+    }
+
+    main .container{
+      max-width:56rem;
+      margin:0 auto;
+    }
+
+    .progress-section{
+      position:sticky;
+      top:0;
+      z-index:50;
+      border-bottom:1px solid var(--line);
+      background:white;
+      padding:1.25rem;
+      box-shadow:0 4px 6px rgba(0,0,0,0.08);
+    }
+
+    .progress-header{
+      margin-bottom:0.75rem;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+    }
+
+    #progress-text{
+      font-weight:600;
+      color:var(--ink);
+    }
+
+    #score-text{
+      font-family:"Space Mono", monospace;
+      font-size:0.875rem;
+      color:#666666;
+    }
+
+    .progress-bar{
+      height:0.5rem;
+      overflow:hidden;
+      border-radius:9999px;
+      background:var(--code-bg);
+    }
+
+    #progress-fill{
+      width:0%;
+      height:100%;
+      border-radius:9999px;
+      background:var(--mint);
+      transition:width .35s ease;
+    }
+
+    #quiz-list{
+      display:flex;
+      flex-direction:column;
+      gap:1.25rem;
+      padding:1.25rem;
+    }
+
+    .question-card{
+      border-radius:1rem;
+      border:1px solid var(--line);
+      background:#fafafa;
+      padding:1.25rem;
+    }
+
+    .question-number{
+      margin-bottom:0.5rem;
+      font-size:0.875rem;
+      font-weight:700;
+      letter-spacing:0.18em;
+      color:var(--mint);
+      text-transform:uppercase;
+    }
+
+    .question-title{
+      margin-bottom:1.25rem;
+      font-size:1.25rem;
+      font-weight:600;
+      line-height:1.5;
+      color:var(--ink);
+    }
+
+    .code-block{
+      margin:0 0 1.25rem 0;
+      overflow:hidden;
+      border:1px solid var(--code-line);
+      border-radius:0.5rem;
+      background:var(--code-bg);
+      color:var(--ink);
+      box-shadow:inset 3px 0 0 var(--mint);
+    }
+
+    .code-block code{
+      display:block;
+      padding:1rem;
+      font-family:"Space Mono", monospace;
+      font-size:0.8rem;
+      line-height:1.75;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
+
+    .answers{
+      display:flex;
+      flex-direction:column;
+      gap:0.75rem;
+      margin-bottom:0;
+    }
+
+    .answer{
+      width:100%;
+      text-align:left;
+      border:1px solid var(--line);
+      background:#fafafa;
+      color:var(--ink);
+      padding:1rem;
+      border-radius:0.75rem;
+      cursor:pointer;
+      transition:transform .16s ease,border-color .16s ease,background .16s ease;
+      display:flex;
+      gap:0.75rem;
+      font-family:inherit;
+      font-size:inherit;
+    }
+
+    .answer:hover:not(:disabled){
+      transform:translateY(-2px);
+      border-color:var(--mint);
+      background:#fff5f0;
+    }
+
+    .answer:disabled{
+      cursor:default;
+    }
+
+    .answer.is-correct{
+      border-color:#27ae60;
+      background:#e8f5e9;
+      color:#1b5e20;
+      font-weight:600;
+    }
+
+    .answer.is-incorrect{
+      border-color:#e53935;
+      background:#ffebee;
+      color:#c62828;
+    }
+
+    .answer.is-revealed{
+      border-color:#27ae60;
+      background:#e8f5e9;
+      color:#1b5e20;
+      font-weight:600;
+    }
+
+    .letter{
+      font-family:"Space Mono", monospace;
+      background:#fff5f0;
+      color:var(--mint);
+      display:flex;
+      height:1.75rem;
+      width:1.75rem;
+      align-items:center;
+      justify-content:center;
+      border-radius:9999px;
+      font-size:0.875rem;
+      font-weight:700;
+      flex-shrink:0;
+    }
+
+    .answer-copy{
+      min-width:0;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      white-space:normal;
+      line-height:1.55;
+    }
+
+    .inline-code{
+      display:inline;
+      padding:0.08rem 0.34rem;
+      border:1px solid var(--code-line);
+      border-radius:0.34rem;
+      background:var(--code-bg);
+      color:var(--sun);
+      font-family:"Space Mono", monospace;
+      font-size:0.86em;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
+
+    .feedback{
+      display:none;
+      border-left:3px solid var(--mint);
+      background:#fff5f0;
+      margin-top:1.25rem;
+      padding:1rem;
+      border-radius:0 0.5rem 0.5rem 0;
+    }
+
+    .feedback.show{
+      display:block;
+    }
+
+    .feedback p{
+      margin:0;
+    }
+
+    #result-panel{
+      display:none;
+      margin:1.25rem;
+      margin-bottom:2rem;
+      border-radius:1.5rem;
+      border:1px solid rgba(250,100,50,0.4);
+      background:#fff5f0;
+      padding:1.5rem;
+      text-align:center;
+    }
+
+    #result-panel.show{
+      display:block;
+      animation:rise .35s ease-out;
+    }
+
+    @keyframes rise{
+      from{opacity:0;transform:translateY(10px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    .trophy-icon{
+      margin:0 auto 1rem;
+      display:flex;
+      height:3.5rem;
+      width:3.5rem;
+      align-items:center;
+      justify-content:center;
+      border-radius:9999px;
+      background:var(--mint);
+      color:white;
+      font-size:1.75rem;
+    }
+
+    #result-panel h2{
+      font-size:1.5rem;
+      font-weight:700;
+      margin:0;
+      color:var(--ink);
+    }
+
+    #result-score{
+      margin-top:0.75rem;
+      font-size:1.125rem;
+      font-weight:600;
+      color:var(--ink);
+    }
+
+    #result-message{
+      margin-top:0.5rem;
+      color:#666666;
+    }
+
+    #restart-button{
+      margin-top:1.5rem;
+      display:inline-flex;
+      align-items:center;
+      gap:0.5rem;
+      border-radius:0.75rem;
+      background:var(--mint);
+      padding:0.75rem 1.25rem;
+      font-weight:700;
+      color:white;
+      border:none;
+      cursor:pointer;
+      transition:filter .16s ease;
+    }
+
+    #restart-button:hover{
+      filter:brightness(1.1);
+    }
+
+    #restart-button:focus-visible{
+      outline:3px solid var(--sun);
+      outline-offset:3px;
+    }
+
+    .answer:focus-visible{
+      outline:3px solid var(--sun);
+      outline-offset:3px;
+    }
+
+    .token-keyword{color:var(--mint);font-weight:700}
+    .token-function{color:var(--sun)}
+    .token-string{color:var(--mint)}
+    .token-number{color:var(--sun)}
+    .token-comment{color:#999999;font-style:italic}
+    .token-template{color:var(--mint)}
+
+    @media(max-width:640px){
+      header{padding:2rem 1rem 1.25rem}
+      h1{font-size:1.875rem}
+      .question-title{font-size:1.125rem}
+      #quiz-list{padding:1rem}
+      .answer{padding:1rem;font-size:0.9rem}
+      .code-block code{padding:0.9rem;font-size:0.75rem}
+    }
+  </style>
+</head>
+<body style="background: rgb(245, 245, 245);">
+  <div class="app-shell">
+    <header>
+      <div class="container">
+        <div class="header-badge">
+          <span class="badge-icon">💻</span>
+          <span>JAVA SCRIPT · KENNISQUIZ</span>
+        </div>
+        <h1>Quiz: Invoer/uitvoer, variabelen &amp; datatypes</h1>
+        <p class="header-desc">Kies bij elke vraag het beste antwoord. Deze quiz test je begrip van de kernconcepten.</p>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <section class="progress-section">
+          <div class="progress-header">
+            <p id="progress-text" aria-live="polite">Vraag 0 van 20</p>
+            <p id="score-text" aria-live="polite">Score: 0</p>
+          </div>
+          <div class="progress-bar" aria-label="Quizvoortgang">
+            <div id="progress-fill"></div>
+          </div>
+        </section>
+
+        <div id="quiz-list" class="quiz-panel"></div>
+
+        <section id="result-panel" aria-live="polite">
+          <div class="trophy-icon">🏆</div>
+          <h2>Quiz afgerond!</h2>
+          <p id="result-score"></p>
+          <p id="result-message"></p>
+          <button id="restart-button" type="button">
+            <span>🔄</span>
+            <span>Quiz opnieuw starten</span>
+          </button>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const quiz = [
+      {
+        question:"Wat is het verschil tussen het declareren en initialiseren van een variabele?",
+        answers:[
+          "Declareren geeft de variabele een naam, initialiseren voegt de functie `console.log()` toe",
+          "Declareren reserveert geheugen, initialiseren wijst een waarde toe",
+          "Declareren betekent een `const` gebruiken, initialiseren betekent een `let` gebruiken",
+          "Er is geen verschil, het zijn synoniemen"
+        ],
+        correct:"B",
+        feedback:"Declareren reserveert een plekje in het geheugen, initialiseren geeft dat plekje een waarde."
+      },
+      {
+        question:"Je schrijft een programma dat de score van een speler bijhoudt. De score kan tijdens het spel veranderen. Welke declaratie is het meest geschikt?",
+        answers:[
+          "`const score = 0;` omdat je de score niet meer mag veranderen",
+          "`let score = 0;` omdat de score nog zal veranderen",
+          "`var score = 0;` omdat var ontworpen is voor scores",
+          "`score = 0;` zonder let of const, dat is het eenvoudigst"
+        ],
+        correct:"B",
+        feedback:"Gebruik `let` als een waarde gaat veranderen, en `const` als ze constant blijft."
+      },
+      {
+        question:"Wat doet `console.log(3 + 4)`?",
+        answers:[
+          "Toont het resultaat van de optelling (`7`) in het console-paneel",
+          "Voert de optelling uit maar toont niets",
+          "Creëert een fout omdat je niet kan optellen in `console.log()`",
+          "Toont de tekst `3 + 4` letterlijk in het console-paneel"
+        ],
+        correct:"A",
+        feedback:"`console.log()` voert alles uit wat erin staat en toont het resultaat."
+      },
+      {
+        question:"Welke uitspraak over `prompt()` klopt?",
+        answers:[
+          "`prompt()` geeft altijd een getal terug",
+          "`prompt()` geeft altijd een string terug, zelfs als de gebruiker een getal intikt",
+          "`prompt()` geeft een boolean terug",
+          "`prompt()` vraagt nooit invoer, het toont alleen berichten"
+        ],
+        correct:"B",
+        feedback:"`prompt()` geeft altijd een string terug, dus je moet omzetten met `Number()` als je ermee wil rekenen."
+      },
+      {
+        question:"Welk datatype heeft de waarde `undefined`?",
+        answers:["`string`","`number`","`undefined`","`null`"],
+        correct:"C",
+        feedback:"`undefined` is zelf een datatype, gebruikt voor variabelen die gedeclareerd maar niet geïnitialiseerd zijn."
+      },
+      {
+        question:"Welk van deze is een string?",
+        answers:["`42`","`true`","`\"Hallo\"`","`undefined`"],
+        correct:"C",
+        feedback:"Strings staan altijd tussen aanhalingstekens. `42` zonder aanhalingstekens is een number."
+      },
+      {
+        question:"Je hebt deze code. Wat gebeurt er als de gebruiker `3` intikt?",
+        code:`let antwoord = prompt("Geef een getal:");
+let getal = antwoord + 5;`,
+        answers:[
+          "`getal` wordt `8` (3 + 5)",
+          "`getal` wordt `\"35\"` (tekst aan elkaar plakken)",
+          "Er ontstaat een fout",
+          "`getal` wordt `undefined`"
+        ],
+        correct:"B",
+        feedback:"Je voegt een string (`\"3\"`) en een getal (`5`) samen, dus JavaScript plakt ze aan elkaar als tekst."
+      },
+      {
+        question:"Wat is het verschil tussen `Number(antwoord)` en `parseInt(antwoord)` als `antwoord = \"42.5\"`?",
+        answers:[
+          "`Number()` geeft `42` en `parseInt()` geeft `42.5`",
+          "`Number()` geeft `42.5` en `parseInt()` geeft `42`",
+          "Ze geven altijd hetzelfde resultaat",
+          "`Number()` werkt niet op strings"
+        ],
+        correct:"B",
+        feedback:"`Number()` behoudt kommagetallen, `parseInt()` haalt alles na de komma eraf."
+      },
+      {
+        question:"Wat is het resultaat van `10 % 3`?",
+        answers:["`3` (10 gedeeld door 3)","`1` (de rest van 10 gedeeld door 3)","`3.333...` (10 gedeeld door 3 met komma)","`0` (modulo geeft altijd 0)"],
+        correct:"B",
+        feedback:"`%` is de modulo-operator, die geeft de rest na deling. 10 gedeeld door 3 is 3 rest 1."
+      },
+      {
+        question:"Wat is het resultaat van `2 + 3 * 4`?",
+        answers:["`20` (eerst 2 + 3, dan * 4)","`14` (eerst 3 * 4, dan + 2)","Dit geeft een fout","`9` (snel achter elkaar berekend)"],
+        correct:"B",
+        feedback:"Vermenigvuldiging gaat voor optelling."
+      },
+      {
+        question:"Wat doet `x++`?",
+        answers:["Geeft x toe aan de volgende variabele","Verhoogt x met 1 (zelfde als `x = x + 1`)","Geeft de volgende waarde","Voegt een comment toe"],
+        correct:"B",
+        feedback:"`x++` is een verkorte notatie voor `x = x + 1`."
+      },
+      {
+        question:"JavaScript is loosely typed. Wat betekent dat?",
+        answers:["JavaScript-code is makkelijk geschreven","Variabelen kunnen van datatype veranderen zonder fouten","Je hoeft niet op Enter te drukken na je code","JavaScript accepteert minder datatypes dan andere talen"],
+        correct:"B",
+        feedback:"In JavaScript hoef je het datatype niet van tevoren op te geven, en het kan veranderen."
+      },
+      {
+        question:"Welke syntax is correct voor template strings?",
+        answers:["`\"${naam} is 20 jaar\"`","`'${naam} is 20 jaar'`","`` `${naam} is 20 jaar` ``","`[${naam} is 20 jaar]`"],
+        correct:"C",
+        feedback:"Template strings gebruiken backticks, niet gewone aanhalingstekens. Variabelen gaan tussen `${}`."
+      },
+      {
+        question:"Je hebt variabelen `naam = \"Sofie\"` en `leeftijd = 21`. Welke regel geeft hetzelfde resultaat als de codevoorbeelden?",
+        code:`// Optie A:
+console.log(\`\${naam} is \${leeftijd} jaar oud.\`);
+
+// Optie B:
+console.log(naam + " is " + leeftijd + " jaar oud.");`,
+        answers:["Alleen optie A","Alleen optie B","Beide geven hetzelfde resultaat","Geen van beide werkt"],
+        correct:"C",
+        feedback:"Template strings zijn overzichtelijker dan concatenatie met `+`, maar het resultaat is identiek."
+      },
+      {
+        question:"Wat gebeurt er met code na `//` op dezelfde regel?",
+        answers:["Het wordt uitgevoerd","Het wordt genegeerd door JavaScript","Het voegt een comment toe aan de console","Het veroorzaakt een fout"],
+        correct:"B",
+        feedback:"`//` geeft aan dat alles daarna op die regel een comment is en niet wordt uitgevoerd."
+      },
+      {
+        question:"Wat geeft `typeof \"hello\"` als resultaat?",
+        answers:["`string`","`\"string\"`","`text`","`\"hello\"`"],
+        correct:"B",
+        feedback:"`typeof` geeft altijd een stringwaarde terug. In de console wordt die weergegeven als `\"string\"`."
+      },
+      {
+        question:"Je wil het getal `42` omzetten naar een string. Welke regel doet dat?",
+        answers:["`let tekst = parseInt(42);`","`let tekst = String(42);`","`let tekst = (42).toString();`","Beide B en C"],
+        correct:"D",
+        feedback:"Beide manieren werken: `String(42)` en `(42).toString()` zetten het getal om naar een string."
+      },
+      {
+        question:"Wat is het verschil tussen `null` en `undefined`?",
+        answers:["`undefined` is een getal, `null` is tekst","`undefined` is automatisch (geen waarde toegekend), `null` is bewust (jij kent het toe)","Ze zijn identiek","`null` bestaat niet in JavaScript"],
+        correct:"B",
+        feedback:"`undefined` betekent dat er nog geen waarde is; `null` betekent dat je bewust geen waarde toekent."
+      },
+      {
+        question:"Je wil gebruiker vragen om hun geboortejaar, en dan hun leeftijd berekenen (huidigjaar - geboortejaar). Welke code is CORRECT?",
+        answers:[
+          "`let jaar = prompt(\"Geboortejaar?\"); let leeftijd = 2026 - jaar;`",
+          "`let jaar = Number(prompt(\"Geboortejaar?\")); let leeftijd = 2026 - jaar;`",
+          "`let jaar = prompt(\"Geboortejaar?\"); let leeftijd = 2026 - Number(jaar);`",
+          "Beide B en C zijn correct"
+        ],
+        correct:"D",
+        feedback:"In beide gevallen zet je de string om naar een number voordat je ermee rekent."
+      },
+      {
+        question:"Waarom is `console.log()` nuttig bij programmeren?",
+        answers:["Om het eindresultaat aan gebruikers te tonen","Om te controleren of variabelen de waarden hebben die je verwacht (debuggen)","Om fouten automatisch op te lossen","Om code sneller uit te voeren"],
+        correct:"B",
+        feedback:"`console.log()` helpt je te controleren of je code doet wat je verwacht."
+      }
+    ];
+
+    const totalQuestions = quiz.length;
+    let answeredCount = 0;
+    let correctCount = 0;
+
+    const progressText = document.getElementById("progress-text");
+    const scoreText = document.getElementById("score-text");
+    const progressFill = document.getElementById("progress-fill");
+    const resultPanel = document.getElementById("result-panel");
+    const resultScore = document.getElementById("result-score");
+    const resultMessage = document.getElementById("result-message");
+    const quizList = document.getElementById("quiz-list");
+
+    function escapeHtml(value) {
+      return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function formatInline(value) {
+      const escaped = escapeHtml(value);
+      return escaped.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+    }
+
+    function highlightCode(value) {
+      let output = escapeHtml(value);
+      output = output.replace(/(\/\/.*)$/gm, '<span class="token-comment">$1</span>');
+      output = output.replace(/\b(let|const|var|typeof)\b/g, '<span class="token-keyword">$1</span>');
+      output = output.replace(/\b(prompt|console\.log|Number|parseInt|String|toString)\b/g, '<span class="token-function">$1</span>');
+      output = output.replace(/(&quot;[^&]*?&quot;|'[^']*?')/g, '<span class="token-string">$1</span>');
+      output = output.replace(/(`[^`]*`)/g, '<span class="token-template">$1</span>');
+      output = output.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="token-number">$1</span>');
+      return output;
+    }
+
+    function renderQuiz() {
+      quizList.innerHTML = quiz.map((item, index) => {
+        const letters = ["A","B","C","D"];
+        const answers = item.answers.map((answer, answerIndex) => `
+          <button class="answer" data-option="${letters[answerIndex]}" type="button" role="radio" aria-checked="false">
+            <span class="letter">${letters[answerIndex]}</span>
+            <span class="answer-copy">${formatInline(answer)}</span>
+          </button>
+        `).join("");
+
+        return `
+          <section id="q${index + 1}" class="question-card" data-correct="${item.correct}">
+            <p class="question-number">Vraag ${index + 1}</p>
+            <h2 class="question-title">${formatInline(item.question)}</h2>
+            ${item.code ? `<pre class="code-block"><code>${highlightCode(item.code)}</code></pre>` : ""}
+            <div class="answers" role="radiogroup" aria-label="Antwoorden voor vraag ${index + 1}">
+              ${answers}
+            </div>
+            <div class="feedback">
+              <p>${formatInline(item.feedback)}</p>
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      bindAnswerEvents();
+    }
+
+    function updateProgress() {
+      progressText.textContent = `Vraag ${answeredCount} van ${totalQuestions}`;
+      scoreText.textContent = `Score: ${correctCount}`;
+      progressFill.style.width = `${answeredCount / totalQuestions * 100}%`;
+    }
+
+    function showResults() {
+      const percentage = Math.round(correctCount / totalQuestions * 100);
+      resultScore.textContent = `Je behaalde ${correctCount} van de ${totalQuestions} juiste antwoorden (${percentage}%).`;
+      resultMessage.textContent = percentage >= 80
+        ? "Sterk werk! Je beheerst de kernconcepten al heel goed."
+        : percentage >= 50
+          ? "Goed bezig! Bekijk de uitleg bij de vragen die nog lastig waren."
+          : "Blijf oefenen: de uitleg bij elke vraag helpt je om de concepten beter te begrijpen.";
+
+      resultPanel.classList.add("show");
+      resultPanel.scrollIntoView({ behavior:"smooth", block:"center" });
+    }
+
+    function checkIfAllWrong(card) {
+      const correct = card.dataset.correct;
+      const wrongAnswers = Array.from(card.querySelectorAll(".answer")).filter(
+        btn => btn.dataset.option !== correct
+      );
+      return wrongAnswers.every(btn => btn.classList.contains("is-incorrect"));
+    }
+
+    function revealCorrectAnswer(card) {
+      const correct = card.dataset.correct;
+      card.querySelectorAll(".answer").forEach(choice => {
+        choice.disabled = true;
+        if (choice.dataset.option === correct) {
+          choice.classList.add("is-revealed", "is-correct");
+        }
+      });
+      card.classList.add("answered");
+      card.querySelector(".feedback").classList.add("show");
+
+      answeredCount += 1;
+      correctCount += 1;
+
+      updateProgress();
+
+      if (answeredCount === totalQuestions) {
+        showResults();
+      }
+    }
+
+    function bindAnswerEvents() {
+      document.querySelectorAll(".question-card").forEach(card => {
+        card.querySelectorAll(".answer").forEach(button => {
+          button.addEventListener("click", () => {
+            if (card.classList.contains("answered")) return;
+
+            const correct = card.dataset.correct;
+            const isCorrect = button.dataset.option === correct;
+
+            if (isCorrect) {
+              button.classList.add("is-correct");
+              revealCorrectAnswer(card);
+            } else {
+              button.classList.add("is-incorrect");
+              button.disabled = true;
+              button.setAttribute("aria-checked", "false");
+
+              if (checkIfAllWrong(card)) {
+                revealCorrectAnswer(card);
+              }
+            }
+          });
+        });
+      });
+    }
+
+    document.getElementById("restart-button").addEventListener("click", () => {
+      answeredCount = 0;
+      correctCount = 0;
+      resultPanel.classList.remove("show");
+
+      document.querySelectorAll(".question-card").forEach(card => {
+        card.classList.remove("answered");
+        card.querySelector(".feedback").classList.remove("show");
+
+        card.querySelectorAll(".answer").forEach(button => {
+          button.disabled = false;
+          button.setAttribute("aria-checked", "false");
+          button.classList.remove("is-correct", "is-incorrect", "is-revealed");
+        });
+      });
+
+      updateProgress();
+      document.getElementById("q1").scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+
+    renderQuiz();
+    updateProgress();
+  </script>
+</body>
+</html>
