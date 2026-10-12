@@ -154,10 +154,10 @@
    <header class="w-full px-4 pt-8 pb-5 sm:px-8 sm:pt-12">
     <div class="mx-auto max-w-4xl">
      <div class="mb-5 flex items-center gap-3 text-sm font-semibold tracking-wide text-[#fa6432]">
-      <span class="flex h-9 w-9 items-center justify-center rounded-full border border-[#fa6432]/40 bg-[#fff5f0]"> <i data-lucide="code-2" class="h-4 w-4"></i> </span> <span>JAVASCRIPT · KENNISTOETS</span>
+      <span class="flex h-9 w-9 items-center justify-center rounded-full border border-[#fa6432]/40 bg-[#fff5f0]"> <i data-lucide="code-2" class="h-4 w-4"></i> </span> <span>JAVA SCRIPT · KENNISQUIZ</span>
      </div>
-     <h1 class="max-w-3xl text-3xl font-bold leading-tight sm:text-4xl text-[#000a1e]">Invoer/uitvoer, variabelen &amp; datatypes</h1>
-     <p class="mt-4 max-w-2xl leading-relaxed text-[#666666]">Kies bij elke vraag het beste antwoord. Deze zefltest toets je begrip van de kernconcepten.</p>
+     <h1 class="max-w-3xl text-3xl font-bold leading-tight sm:text-4xl text-[#000a1e]">Quiz: Invoer/uitvoer, variabelen &amp; datatypes</h1>
+     <p class="mt-4 max-w-2xl leading-relaxed text-[#666666]">Kies bij elke vraag het beste antwoord. Deze quiz test je begrip van de kernconcepten.</p>
     </div>
    </header>
    <main class="w-full px-4 pb-12 sm:px-8">
@@ -210,10 +210,10 @@
       {
         question:"Wat doet `console.log(3 + 4)`?",
         answers:[
-          "Toont het resultaat van de optelling (`7`) in het console-paneel",
+          "Toont het resultaat van de optelling (7) in het console-paneel",
           "Voert de optelling uit maar toont niets",
-          "Creëert een fout omdat je niet kan optellen in `console.log()`",
-          "Toont de tekst `3 + 4` letterlijk in het console-paneel"
+          "Creëert een fout omdat je niet kan optellen in console.log()",
+          "Toont de tekst \"3 + 4\" letterlijk in het console-paneel"
         ],
         correct:"A",
         feedback:"`console.log()` voert alles uit wat erin staat en toont het resultaat."
@@ -227,19 +227,19 @@
           "`prompt()` vraagt nooit invoer, het toont alleen berichten"
         ],
         correct:"B",
-        feedback:"`prompt()` geeft altijd een string terug, dus je moet omzetten met `Number()` als je ermee wil rekenen."
+        feedback:"Dit is heel belangrijk: `prompt()` geeft altijd een string terug, dus je moet omzetten met `Number()` als je ermee wil rekenen."
       },
       {
-        question:"Welk datatype heeft de waarde `undefined`?",
+        question:"Welk datatype heeft de waarde `3.14`?",
         answers:["`string`","`number`","`undefined`","`null`"],
-        correct:"C",
-        feedback:"`undefined` is zelf een datatype, gebruikt voor variabelen die gedeclareerd maar niet geïnitialiseerd zijn."
+        correct:"B",
+        feedback:"`3.14` is een decimaal getal, dus het datatype is `number`. In tegenstelling tot andere programmeertalen zoals Java, C#, C++ kent JavaScript geen apart datatype voor decimale getallen."
       },
       {
         question:"Welk van deze is een string?",
         answers:["`42`","`true`","`\"Hallo\"`","`undefined`"],
         correct:"C",
-        feedback:"Strings staan altijd tussen aanhalingstekens. `42` zonder aanhalingstekens is een number."
+        feedback:"Strings staan altijd tussen aanhalingstekens (`\"` of `'`). `42` zonder aanhalingstekens is een number."
       },
       {
         question:"Je hebt deze code. Wat gebeurt er als de gebruiker `3` intikt?",
@@ -252,7 +252,7 @@ let getal = antwoord + 5;`,
           "`getal` wordt `undefined`"
         ],
         correct:"B",
-        feedback:"Je voegt een string (`\"3\"`) en een getal (`5`) samen, dus JavaScript plakt ze aan elkaar als tekst."
+        feedback:"Dit is de \"plak-fout\"! Je voegt een string (`\"3\"`) en een getal (`5`) samen, dus JavaScript plakt ze aan elkaar als tekst."
       },
       {
         question:"Wat is het verschil tussen `Number(antwoord)` en `parseInt(antwoord)` als `antwoord = \"42.5\"`?",
@@ -269,42 +269,42 @@ let getal = antwoord + 5;`,
         question:"Wat is het resultaat van `10 % 3`?",
         answers:["`3` (10 gedeeld door 3)","`1` (de rest van 10 gedeeld door 3)","`3.333...` (10 gedeeld door 3 met komma)","`0` (modulo geeft altijd 0)"],
         correct:"B",
-        feedback:"`%` is de modulo-operator, die geeft de rest na deling. 10 gedeeld door 3 is 3 rest 1."
+        feedback:"`%` is de modulo-operator, die geeft de rest na deling. 10÷3 = 3 rest 1."
       },
       {
         question:"Wat is het resultaat van `2 + 3 * 4`?",
-        answers:["`20` (eerst 2 + 3, dan * 4)","`14` (eerst 3 * 4, dan + 2)","Dit geeft een fout","`9` (snel achter elkaar berekend)"],
+        answers:["`20` (eerst (2+3), dan *4)","`14` (eerst 3*4, dan +2)","Dit geeft een fout","`9` (snel achter elkaar berekend)"],
         correct:"B",
-        feedback:"Vermenigvuldiging gaat voor optelling."
+        feedback:"In wiskunde en programmeren: vermenigvuldiging gaat voor optelling (PEMDAS/BODMAS)."
       },
       {
         question:"Wat doet `x++`?",
         answers:["Geeft x toe aan de volgende variabele","Verhoogt x met 1 (zelfde als `x = x + 1`)","Geeft de volgende waarde","Voegt een comment toe"],
         correct:"B",
-        feedback:"`x++` is een verkorte notatie voor `x = x + 1`."
+        feedback:"`x++` is een verkorte notatie voor `x = x + 1`. Handig om tellers te verhogen."
       },
       {
-        question:"JavaScript is loosely typed. Wat betekent dat?",
+        question:"JavaScript is \"loosely typed\". Wat betekent dat?",
         answers:["JavaScript-code is makkelijk geschreven","Variabelen kunnen van datatype veranderen zonder fouten","Je hoeft niet op Enter te drukken na je code","JavaScript accepteert minder datatypes dan andere talen"],
         correct:"B",
-        feedback:"In JavaScript hoef je het datatype niet van tevoren op te geven, en het kan veranderen."
+        feedback:"In JavaScript hoef je het datatype niet van tevoren op te geven, en het kan veranderen. Dat is anders dan strikt getypeerde talen zoals Java."
       },
       {
         question:"Welke syntax is correct voor template strings?",
         answers:["`\"${naam} is 20 jaar\"`","`'${naam} is 20 jaar'`","`` `${naam} is 20 jaar` ``","`[${naam} is 20 jaar]`"],
         correct:"C",
-        feedback:"Template strings gebruiken backticks, niet gewone aanhalingstekens. Variabelen gaan tussen `${}`."
+        feedback:"Template strings gebruiken backticks, niet aanhalingstekens. Variabelen gaan tussen `${}`."
       },
       {
-        question:"Je hebt variabelen `naam = \"Sofie\"` en `leeftijd = 21`. Welke regel geeft hetzelfde resultaat als de codevoorbeelden?",
+        question:"Je hebt variabelen `naam = \"Sofie\"` en `leeftijd = 21`. Welke optie(s) geven deze output: `Sofie is 21 jaar oud.`?",
         code:`// Optie A:
 console.log(\`\${naam} is \${leeftijd} jaar oud.\`);
 
 // Optie B:
 console.log(naam + " is " + leeftijd + " jaar oud.");`,
-        answers:["Alleen optie A","Alleen optie B","Beide geven hetzelfde resultaat","Geen van beide werkt"],
+        answers:["Alleen optie A","Alleen optie B","Beide geven dezelfde output","Geen van beide werkt"],
         correct:"C",
-        feedback:"Template strings zijn overzichtelijker dan concatenatie met `+`, maar het resultaat is identiek."
+        feedback:"Template strings (backticks met `${}`) en concatenatie (met `+`) geven dezelfde output. Template strings zijn alleen overzichtelijker."
       },
       {
         question:"Wat gebeurt er met code na `//` op dezelfde regel?",
@@ -316,19 +316,19 @@ console.log(naam + " is " + leeftijd + " jaar oud.");`,
         question:"Wat geeft `typeof \"hello\"` als resultaat?",
         answers:["`string`","`\"string\"`","`text`","`\"hello\"`"],
         correct:"B",
-        feedback:"`typeof` geeft altijd een stringwaarde terug. In de console wordt die weergegeven als `\"string\"`."
+        feedback:"`typeof` geeft altijd een string terug. `console.log(typeof \"hello\")` toont `\"string\"` (met aanhalingstekens)."
       },
       {
         question:"Je wil het getal `42` omzetten naar een string. Welke regel doet dat?",
         answers:["`let tekst = parseInt(42);`","`let tekst = String(42);`","`let tekst = (42).toString();`","Beide B en C"],
         correct:"D",
-        feedback:"Beide manieren werken: `String(42)` en `(42).toString()` zetten het getal om naar een string."
+        feedback:"Beide manieren werken: `String(getal)` en `getal.toString()` zetten een getal om naar een string."
       },
       {
         question:"Wat is het verschil tussen `null` en `undefined`?",
         answers:["`undefined` is een getal, `null` is tekst","`undefined` is automatisch (geen waarde toegekend), `null` is bewust (jij kent het toe)","Ze zijn identiek","`null` bestaat niet in JavaScript"],
         correct:"B",
-        feedback:"`undefined` betekent dat er nog geen waarde is; `null` betekent dat je bewust geen waarde toekent."
+        feedback:"`undefined` = variabele gedeclareerd, maar nog geen waarde. `null` = jij zet bewust \"geen waarde\" in een variabele."
       },
       {
         question:"Je wil gebruiker vragen om hun geboortejaar, en dan hun leeftijd berekenen (huidigjaar - geboortejaar). Welke code is CORRECT?",
@@ -339,13 +339,13 @@ console.log(naam + " is " + leeftijd + " jaar oud.");`,
           "Beide B en C zijn correct"
         ],
         correct:"D",
-        feedback:"In beide gevallen zet je de string om naar een number voordat je ermee rekent."
+        feedback:"In beide gevallen zet je de string om naar een number voordat je ermee rekent, alleen op andere momenten. Allebei correct!"
       },
       {
         question:"Waarom is `console.log()` nuttig bij programmeren?",
         answers:["Om het eindresultaat aan gebruikers te tonen","Om te controleren of variabelen de waarden hebben die je verwacht (debuggen)","Om fouten automatisch op te lossen","Om code sneller uit te voeren"],
         correct:"B",
-        feedback:"`console.log()` helpt je te controleren of je code doet wat je verwacht."
+        feedback:"`console.log()` is je voornaamste debug-tool. Het helpt je te checken of je code doet wat je verwacht."
       }
     ];
 
