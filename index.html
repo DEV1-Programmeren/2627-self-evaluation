@@ -168,6 +168,21 @@
       66%{transform:translateX(2px) rotate(.3deg)}
       83%{transform:translateX(-1px) rotate(-.15deg)}
     }
+    .timer-panel{
+      position:fixed;
+      left:1rem;
+      bottom:1rem;
+      z-index:60;
+      box-shadow:0 12px 30px rgba(0,0,0,.12);
+    }
+    .timer-panel .timer-on{display:flex}
+    .timer-panel .timer-off{display:none}
+    .timer-panel.is-hidden .timer-on{display:none}
+    .timer-panel.is-hidden .timer-off{display:flex}
+    .timer-panel button:focus-visible{
+      outline:3px solid var(--sun);
+      outline-offset:3px;
+    }
     @media(max-width:640px){
       .answer{align-items:flex-start}
       .letter{margin-top:.1rem}
@@ -192,7 +207,7 @@
      <p id="quiz-intro" class="mt-4 max-w-2xl leading-relaxed text-[#666666]">Kies bij elke vraag het beste antwoord. Enkel een juist antwoord bij je eerste poging levert een punt op. Bij een fout antwoord mag je verder zoeken naar het juiste antwoord, maar die vraag levert geen punt meer op.</p>
     </div>
    </header>
-   <main class="w-full px-4 pb-12 sm:px-8">
+   <main class="w-full px-4 pb-24 sm:px-8">
     <div class="mx-auto max-w-4xl">
      <section class="sticky top-0 z-50 border-b border-[#dee1e4] bg-white px-5 py-5 shadow-md sm:px-8">
       <div class="mb-3 flex items-center justify-between gap-4">
@@ -210,11 +225,20 @@
       </div>
       <h2 class="text-2xl font-bold text-[#000a1e]">Quiz afgerond!</h2>
       <p id="result-score" class="mt-3 text-lg font-semibold text-[#000a1e]"></p>
+      <p id="result-time" class="mt-2 text-[#000a1e]"></p>
       <p id="result-message" class="mt-2 text-[#666666]"></p><button id="restart-button" class="restart-button mt-6 inline-flex items-center gap-2 rounded-xl bg-[#fa6432] px-5 py-3 font-bold text-white transition hover:brightness-110" type="button"> <i data-lucide="rotate-ccw" class="h-4 w-4"></i> <span>Quiz opnieuw starten</span> </button>
      </section>
     </div>
    </main>
   </div>
+  <aside id="timer-panel" class="timer-panel rounded-2xl border border-[#dee1e4] bg-white" aria-label="Timer">
+   <div class="timer-on items-center gap-3 py-2 pl-4 pr-2">
+    <i data-lucide="timer" class="h-4 w-4 text-[#fa6432]"></i>
+    <span id="timer-text" class="font-mono text-lg font-bold text-[#000a1e]" title="Hoelang je al bezig bent">00:00</span>
+    <button id="timer-hide" class="flex h-8 w-8 items-center justify-center rounded-full text-[#666666] transition hover:bg-[#f5f5f5]" type="button" title="Timer verbergen" aria-label="Timer verbergen"> <i data-lucide="eye-off" class="h-4 w-4"></i> </button>
+   </div>
+   <button id="timer-show" class="timer-off items-center gap-2 px-4 py-2 text-sm font-semibold text-[#666666] transition hover:text-[#fa6432]" type="button" title="Timer tonen"> <i data-lucide="timer" class="h-4 w-4"></i> <span>Toon timer</span> </button>
+  </aside>
   <dialog id="intro-dialog" class="intro-dialog w-[calc(100%-2rem)] max-w-lg rounded-2xl border border-[#dee1e4] bg-white p-0 text-[#000a1e]" aria-labelledby="intro-dialog-title">
    <form method="dialog" class="p-6 sm:p-8">
     <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#fff5f0] text-[#fa6432]">
@@ -275,7 +299,60 @@
       quizList.innerHTML = `<p class="text-[#666666]">${escapeHtml(message)}</p>`;
       progressText.textContent = "";
       scoreText.textContent = "";
+      timerPanel.hidden = true;
     }
+
+    // De timer loopt vanaf het moment dat de student begint (na de popup) tot de laatste vraag beantwoord is.
+    // Verbergen stopt de timer niet: wie hem terug toont, ziet hoelang hij al echt bezig is.
+    const HIDE_TIMER_KEY = "zelftest-timer-verbergen";
+    const timerPanel = document.getElementById("timer-panel");
+    const timerText = document.getElementById("timer-text");
+    let timerStart = null;
+    let timerInterval = null;
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = String(Math.floor(totalSeconds / 60) % 60).padStart(2, "0");
+      const seconds = String(totalSeconds % 60).padStart(2, "0");
+      return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
+    }
+
+    function updateTimer() {
+      timerText.textContent = formatTime(timerStart === null ? 0 : Date.now() - timerStart);
+    }
+
+    function startTimer() {
+      stopTimer();
+      timerStart = Date.now();
+      updateTimer();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function setTimerHidden(hidden) {
+      timerPanel.classList.toggle("is-hidden", hidden);
+      try {
+        if (hidden) localStorage.setItem(HIDE_TIMER_KEY, "true");
+        else localStorage.removeItem(HIDE_TIMER_KEY);
+      } catch (e) {}
+    }
+
+    try {
+      timerPanel.classList.toggle("is-hidden", localStorage.getItem(HIDE_TIMER_KEY) === "true");
+    } catch (e) {}
+    document.getElementById("timer-hide").addEventListener("click", () => {
+      setTimerHidden(true);
+      document.getElementById("timer-show").focus();
+    });
+    document.getElementById("timer-show").addEventListener("click", () => {
+      setTimerHidden(false);
+      document.getElementById("timer-hide").focus();
+    });
 
     function loadQuiz() {
       if (!/^\d+$/.test(chapter || "")) {
@@ -315,10 +392,14 @@
 
     function showIntroDialog() {
       try {
-        if (localStorage.getItem(HIDE_INTRO_KEY) === "true") return;
+        if (localStorage.getItem(HIDE_INTRO_KEY) === "true") {
+          startTimer();
+          return;
+        }
       } catch (e) {}
 
       const dialog = document.getElementById("intro-dialog");
+      dialog.addEventListener("close", startTimer, { once:true });
       document.getElementById("intro-dialog-text").textContent = document.getElementById("quiz-intro").textContent;
       document.getElementById("intro-dialog-hide").addEventListener("change", event => {
         try {
@@ -369,6 +450,9 @@
     function showResults() {
       const percentage = Math.round(correctCount / totalQuestions * 100);
       resultScore.textContent = `Je had ${correctCount} van de ${totalQuestions} vragen juist bij je eerste poging (${percentage}%).`;
+      stopTimer();
+      updateTimer();
+      document.getElementById("result-time").textContent = `Je was ${formatTime(Date.now() - timerStart)} bezig.`;
       resultMessage.textContent = percentage >= 80
         ? "Sterk werk! Je beheerst de kernconcepten al heel goed."
         : percentage >= 50
@@ -525,6 +609,7 @@
       });
 
       updateProgress();
+      startTimer();
       document.getElementById("q1").scrollIntoView({ behavior:"smooth", block:"start" });
     });
 
