@@ -254,8 +254,13 @@
   </dialog>
   <script>
     // Welke vragen geladen worden, bepaal je via de url: index.html?hoofdstuk=1
-    // laadt vragen/hoofdstuk-1.js. Zo'n bestand zet window.quizData = { title, questions }.
-    const chapter = new URLSearchParams(window.location.search).get("hoofdstuk");
+    // laadt vragen/hoofdstuk-1.js. Met index.html?quiz=<uuid> laad je vragen/<uuid>.js:
+    // zo deel je een quiz (bv. een kennistoets) enkel via een moeilijk te raden link.
+    // Zo'n bestand zet window.quizData = { title, questions }.
+    const params = new URLSearchParams(window.location.search);
+    const chapter = params.get("hoofdstuk");
+    const quizId = params.get("quiz");
+    const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
     let quiz = [];
     let totalQuestions = 0;
@@ -355,22 +360,30 @@
     });
 
     function loadQuiz() {
-      if (!/^\d+$/.test(chapter || "")) {
+      let file;
+      let notFoundMessage;
+      if (UUID_PATTERN.test(quizId || "")) {
+        file = `vragen/${quizId.toLowerCase()}.js`;
+        notFoundMessage = "Deze quiz bestaat niet (meer). Controleer de link.";
+      } else if (/^\d+$/.test(chapter || "")) {
+        file = `vragen/hoofdstuk-${chapter}.js`;
+        notFoundMessage = `Er bestaat (nog) geen quiz voor hoofdstuk ${chapter}.`;
+      } else {
         showLoadError("Geef in de url aan welk hoofdstuk je wil oefenen, bijvoorbeeld index.html?hoofdstuk=1");
         return;
       }
 
       const script = document.createElement("script");
-      script.src = `vragen/hoofdstuk-${chapter}.js`;
+      script.src = file;
       script.onload = () => {
         if (!window.quizData || !Array.isArray(window.quizData.questions)) {
-          showLoadError(`Het bestand vragen/hoofdstuk-${chapter}.js bevat geen geldige quiz.`);
+          showLoadError(`Het bestand ${file} bevat geen geldige quiz.`);
           return;
         }
         startQuiz(window.quizData);
       };
       script.onerror = () => {
-        showLoadError(`Er bestaat (nog) geen quiz voor hoofdstuk ${chapter}.`);
+        showLoadError(notFoundMessage);
       };
       document.head.appendChild(script);
     }
