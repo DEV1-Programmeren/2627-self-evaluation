@@ -1,5 +1,5 @@
 window.quizData = {
-  title: "Zelftest Kennistoets deel 1 (hoofdstuk 1 tot en met 5)",
+  title: "Vragen Kennistoets deel 1 (hoofdstuk 1 tot en met 5) als zelftest",
   questions: [
     {
       question:"Je hebt deze code. Wat verschijnt er in de console?",
